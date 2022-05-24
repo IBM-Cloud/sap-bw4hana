@@ -84,7 +84,7 @@ kit_bw4hana_export | Path to BW/4HANA Installation Export dir | The archives dow
 
 **Obs***: <br />
 - Sensitive - The variable value is not displayed in your Schematics logs and it is hidden in the input field.<br />
-- The following parameters should have the same values as the ones set for the BASTION server: REGION, ZONE, VPC, SUBNET, SECURITYGROUP.
+- The following parameters should have the same values as the ones set for the BASTION server: REGION, ZONE, VPC, SUBNET, SECURITY_GROUP.
 - For any manual change in the terraform code, you have to make sure that you use a certified image based on the SAP NOTE: 2927211.
 
 
