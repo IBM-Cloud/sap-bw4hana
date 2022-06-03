@@ -4,4 +4,25 @@ sap_product_id: "NW_ABAP_OneHost:BW4HANA20.CORE.HDB.ABAP"
 
 #Target files location
 bw4app_kit: "/usr/sap/trans/kit"
+
+# Source and destination for the kit files
+bw4apps_kit:
+  - bw4apps_src: "{{ kit_sapcar_file }}"
+    bw4apps_dest: "{{ bw4app_kit }}/sapcar"
+  - bw4apps_src: "{{ kit_swpm_file }}"
+    bw4apps_dest: "{{ bw4app_kit }}/swpm.sar"
+  - bw4apps_src: "{{ kit_sapexe_file }}"
+    bw4apps_dest: "{{ bw4app_kit }}/sapexe.sar"
+  - bw4apps_src: "{{ kit_sapexedb_file }}"
+    bw4apps_dest: "{{ bw4app_kit }}/sapexedb.sar"
+  - bw4apps_src: "{{ kit_igsexe_file }}"
+    bw4apps_dest: "{{ bw4app_kit }}/igsexe.sar"
+  - bw4apps_src: "{{ kit_igshelper_file }}"
+    bw4apps_dest: "{{ bw4app_kit }}/igshelper.sar"
+  - bw4apps_src: "{{ kit_saphotagent_file }}"
+    bw4apps_dest: "{{ bw4app_kit }}/saphotagent.sar"
+  - bw4apps_src: "{{ kit_hdbclient_file }}"
+    bw4apps_dest: "{{ bw4app_kit }}/hdbclient.sar"
+  - bw4apps_src: "{{ kit_bw4hana_export }}/"
+    bw4apps_dest: "{{ bw4app_kit }}"
 ...

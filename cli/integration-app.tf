@@ -32,5 +32,5 @@ kit_hdbclient_file: "${var.kit_hdbclient_file}"
 kit_bw4hana_export: "${var.kit_bw4hana_export}"
 ...
     DOC
-  filename = "../ansible/bw4app-vars.yml"
+  filename = "ansible/bw4app-vars.yml"
 }
