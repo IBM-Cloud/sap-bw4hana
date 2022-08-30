@@ -8,6 +8,7 @@ resource "local_file" "app_ansible_bw4app-vars" {
 
 #SAP system configuration
 sap_sid: "${var.sap_sid}"
+app_profile: "${var.APP-PROFILE}"
 sap_ascs_instance_number: "${var.sap_ascs_instance_number}"
 sap_ci_instance_number: "${var.sap_ci_instance_number}"
 sap_main_password: "${var.sap_main_password}"
@@ -20,7 +21,7 @@ hdb_main_password: "${var.hana_main_password}"
 # Number of concurrent jobs used to load and/or extract archives to HANA Host
 hdb_concurrent_jobs: "${var.hdb_concurrent_jobs}"
 
-#SAP S4HANA APP Installation kit path
+#SAP BW/4HANA APP Installation kit path
 kit_sapcar_file: "${var.kit_sapcar_file}"
 kit_swpm_file: "${var.kit_swpm_file}"
 kit_sapexe_file: "${var.kit_sapexe_file}"

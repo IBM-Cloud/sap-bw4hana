@@ -14,6 +14,17 @@ resource "null_resource" "ansible-exec" {
     }
 
     provisioner "file" {
+      source      = "modules/ansible-exec/check.ansible.sh"
+      destination = "/tmp/${var.IP}.check.ansible.sh"
+    }
+
+    provisioner "remote-exec" {
+      inline = [
+        "chmod +x /tmp/${var.IP}.check.ansible.sh",
+      ]
+    }
+
+    provisioner "file" {
       source      = "modules/ansible-exec/while.sh"
       destination = "/tmp/${var.IP}.while.sh"
     }
@@ -48,10 +59,28 @@ resource "null_resource" "ansible-exec" {
 
 }
 
+resource "null_resource" "check-ansible" {
+
+    depends_on	= [ null_resource.ansible-exec ]
+
+    connection {
+        type = "ssh"
+        user = "root"
+        host = var.IP
+        private_key = var.private_ssh_key
+        timeout = "2m"
+     }
+
+    provisioner "local-exec" {
+          command = "ssh -o 'StrictHostKeyChecking no' -i ansible/id_rsa root@${var.BASTION_FLOATING_IP} 'export IP=${var.IP}; export SAP_DEPLOYMENT=${local.SAP_DEPLOYMENT}; timeout 10m /tmp/${var.IP}.check.ansible.sh'"
+          on_failure = continue
+    }
+
+}
 
 resource "null_resource" "ansible-logs" {
 
-    depends_on	= [ null_resource.ansible-exec ]
+    depends_on	= [ null_resource.check-ansible ]
 
     connection {
         type = "ssh"

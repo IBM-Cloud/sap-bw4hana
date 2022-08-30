@@ -20,14 +20,22 @@
   when: "'rsync' in ansible_facts.packages"
   delegate_to: localhost
 
-- name: Gather the package facts for target
+- name: Gather the package facts for Red Hat target
   package_facts:
     manager: auto
+  when: ansible_facts['os_family'] == "RedHat"
+
+- name: Gather the packages for Suse target # noqa 305
+  shell: zypper search -i --match-exact rsync
+  args:
+    warn: false
+  register: rsync_search_result
+  when: ansible_facts['os_family'] == "Suse"
 
 - name: Check if rsync package is available on target
   set_fact:
     rsync_found_target: true
-  when: "'rsync' in ansible_facts.packages"
+  when: ansible_facts['os_family'] == "RedHat" and "'rsync' in ansible_facts.packages" or ansible_facts['os_family'] == "Suse" and rsync_search_result.rc == 0
 
 - name: Copy BW/4HANA kit to target using rsync
   synchronize:
@@ -55,9 +63,13 @@
     recurse: yes
     owner: root
     group: root
-  when: rsync_found_controller is defined and rsync_found_target is defined
+
+- name: Check if SWPM archive content was already extracted
+  stat:
+    path: "{{ bw4app_kit }}/swpm/sapinst"
+  register: file_status
 
 - name: Extract SWPM archive
   command: "{{ bw4app_kit }}/sapcar -xf {{ bw4app_kit }}/swpm.sar -R {{ bw4app_kit }}/swpm"
-
+  when: not file_status.stat.exists
 ...

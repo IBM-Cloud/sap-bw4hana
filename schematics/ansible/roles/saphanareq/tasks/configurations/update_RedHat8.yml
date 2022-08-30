@@ -1,11 +1,6 @@
 ---
-- name: Update all packages
+- name: Update all packages # noqa 403
   yum:
     name: '*'
     state: latest
-
-- name: Reboot target host after update
-  reboot:
-    connect_timeout: 5
-    post_reboot_delay: 10
 ...
