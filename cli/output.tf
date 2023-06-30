@@ -1,4 +1,4 @@
-output "DB-HOSTNAME" {
+output "DB_HOSTNAME" {
   value		= module.db-vsi.HOSTNAME
 }
 
@@ -6,7 +6,11 @@ output "DB-PRIVATE-IP" {
   value		= module.db-vsi.PRIVATE-IP
 }
 
-output "APP-HOSTNAME" {
+output "DB-STORAGE-LAYOUT" {
+  value   = module.db-vsi.STORAGE-LAYOUT
+}
+
+output "APP_HOSTNAME" {
   value		= module.app-vsi.HOSTNAME
 }
 

@@ -34,89 +34,90 @@ SSH_KEYS = ["r010-57bfc315-f9e5-46bf-bf61-d87a24a9ce7a", "r010-e372fc6f-4aef-4bd
 # DB VSI variables:
 ##########################################################
 
-DB-HOSTNAME = "sapbw4dbmar3"
+DB_HOSTNAME = "sapbw4dbmar3"
 # The Hostname for the DB VSI. The hostname should be up to 13 characters, as required by SAP
 # Example: HOSTNAME = "ic4sap"
 
-DB-PROFILE = "mx2-16x128"
-# The DB VSI profile. Supported profiles for DB VSI: mx2-16x128. The list of available profiles: https://cloud.ibm.com/docs/vpc?topic=vpc-profiles&interface=ui
+DB_PROFILE = "mx2-16x128"
+# The instance profile used for the HANA VSI. The list of certified profiles for HANA VSIs: https://cloud.ibm.com/docs/sap?topic=sap-hana-iaas-offerings-profiles-intel-vs-vpc
+# Details about all x86 instance profiles: https://cloud.ibm.com/docs/vpc?topic=vpc-profiles).
+# For more information about supported DB/OS and IBM Gen 2 Virtual Server Instances (VSI), check [SAP Note 2927211: SAP Applications on IBM Virtual Private Cloud](https://launchpad.support.sap.com/#/notes/2927211) 
+# Default value: "mx2-16x128"
 
-DB-IMAGE = "ibm-redhat-8-4-amd64-sap-hana-2"
-# OS image for DB VSI. Supported OS images for DB VSIs: ibm-sles-15-3-amd64-sap-hana-2, ibm-redhat-8-4-amd64-sap-hana-2, ibm-redhat-7-6-amd64-sap-hana-3.
+DB_IMAGE = "ibm-redhat-8-6-amd64-sap-hana-2"
+# OS image for DB VSI. Supported OS images for DB VSIs: ibm-sles-15-3-amd64-sap-hana-2, ibm-sles-15-4-amd64-sap-hana-3, ibm-redhat-8-4-amd64-sap-hana-2, ibm-redhat-8-6-amd64-sap-hana-2.
 # The list of available VPC Operating Systems supported by SAP: SAP note '2927211 - SAP Applications on IBM Virtual Private Cloud (VPC) Infrastructure environment' https://launchpad.support.sap.com/#/notes/2927211; The list of all available OS images: https://cloud.ibm.com/docs/vpc?topic=vpc-about-images
-# Example: DB-IMAGE = "ibm-redhat-7-6-amd64-sap-applications-2" 
+# Example: DB_IMAGE = "ibm-sles-15-4-amd64-sap-hana-3"
 
 ##########################################################
 # SAP APP VSI variables:
 ##########################################################
 
-APP-HOSTNAME = "sapbw4appmar3"
+APP_HOSTNAME = "sapbw4appmar3"
 # The Hostname for the SAP APP VSI. The hostname should be up to 13 characters, as required by SAP
 # Example: HOSTNAME = "ic4sap"
 
-APP-PROFILE = "bx2-4x16"
+APP_PROFILE = "bx2-4x16"
 # The APP VSI profile. Supported profiles: bx2-4x16. The list of available profiles: https://cloud.ibm.com/docs/vpc?topic=vpc-profiles&interface=ui
 
-APP-IMAGE = "ibm-redhat-8-4-amd64-sap-applications-2"
-# OS image for SAP APP VSI. Supported OS images for APP VSIs: ibm-sles-15-3-amd64-sap-applications-2, ibm-redhat-8-4-amd64-sap-applications-2, ibm-redhat-7-6-amd64-sap-applications-3.
+APP_IMAGE = "ibm-redhat-8-6-amd64-sap-applications-2"
+# OS image for SAP APP VSI. Supported OS images for APP VSIs: ibm-sles-15-3-amd64-sap-applications-2, ibm-sles-15-4-amd64-sap-applications-4, ibm-redhat-8-4-amd64-sap-applications-2, ibm-redhat-8-6-amd64-sap-applications-2.
 # The list of available VPC Operating Systems supported by SAP: SAP note '2927211 - SAP Applications on IBM Virtual Private Cloud (VPC) Infrastructure environment' https://launchpad.support.sap.com/#/notes/2927211; The list of all available OS images: https://cloud.ibm.com/docs/vpc?topic=vpc-about-images
-# Example: APP-IMAGE = "ibm-redhat-7-6-amd64-sap-applications-2" 
+# Example: APP_IMAGE = "ibm-sles-15-4-amd64-sap-applications-4" 
 
 ##########################################################
 # SAP HANA configuration
 ##########################################################
 
-hana_sid = "HDB"
+HANA_SID = "HDB"
 # SAP HANA system ID. Should follow the SAP rules for SID naming.
-# Example: hana_sid = "HDB"
+# Example: HANA_SID = "HDB"
 
-hana_sysno = "00"
+HANA_SYSNO = "00"
 # SAP HANA instance number. Should follow the SAP rules for instance number naming.
-# Example: hana_sysno = "01"
+# Example: HANA_SYSNO = "01"
 
-hana_system_usage = "custom"
+HANA_SYSTEM_USAGE = "custom"
 # System usage. Default: custom. Suported values: production, test, development, custom
-# Example: hana_system_usage = "custom"
+# Example: HANA_SYSTEM_USAGE = "custom"
 
-hana_components = "server"
+HANA_COMPONENTS = "server"
 # SAP HANA Components. Default: server. Supported values: all, client, es, ets, lcapps, server, smartda, streaming, rdsync, xs, studio, afl, sca, sop, eml, rme, rtl, trp
-# Example: hana_components = "server"
+# Example: HANA_COMPONENTS = "server"
 
-kit_saphana_file = "/storage/HANADB/51055299.ZIP"
+KIT_SAPHANA_FILE = "/storage/HANADB/51055299.ZIP"
 # SAP HANA Installation kit path
-# Supported SAP HANA versions on Red Hat 8.4 and Suse 15.3: HANA 2.0 SP 5 Rev 57, kit file: 51055299.ZIP
-# Supported SAP HANA versions on Red Hat 7.6: HANA 2.0 SP 5 Rev 52, kit file: 51054623.ZIP
-# Example for Red Hat 7: kit_saphana_file = "/storage/HANADB/51054623.ZIP"
-# Example for Red Hat 8 or Suse 15: kit_saphana_file = "/storage/HANADB/51055299.ZIP"
+# Supported SAP HANA versions on Red Hat 8 and Suse 15: HANA 2.0 SP 5 Rev 57, kit file: 51055299.ZIP
+# Example for Red Hat 8 or Suse 15: KIT_SAPHANA_FILE = "/storage/HANADB/51055299.ZIP"
 
 ##########################################################
 # SAP system configuration
 ##########################################################
 
-sap_sid = "B4A"
+SAP_SID = "B4A"
 # SAP System ID
 
-sap_ascs_instance_number = "01"
+SAP_ASCS_INSTANCE_NUMBER = "01"
 # The central ABAP service instance number. Should follow the SAP rules for instance number naming.
-# Example: sap_ascs_instance_number = "01"
+# Example: SAP_ASCS_INSTANCE_NUMBER = "01"
 
-sap_ci_instance_number = "05"
+SAP_CI_INSTANCE_NUMBER = "05"
 # The SAP central instance number. Should follow the SAP rules for instance number naming.
-# Example: sap_ci_instance_number = "06"
+# Example: SAP_CI_INSTANCE_NUMBER = "06"
 
-hdb_concurrent_jobs = "6"
+HDB_CONCURRENT_JOBS = "6"
 # Number of concurrent jobs used to load and/or extract archives to HANA Host
 
 ##########################################################
 # SAP BW/4HANA APP Kit Paths
 ##########################################################
 
-kit_sapcar_file = "/storage/BW4HANA/SAPCAR_1010-70006178.EXE"
-kit_swpm_file = "/storage/BW4HANA/SWPM20SP09_4-80003424.SAR"
-kit_sapexe_file = "/storage/BW4HANA/SAPEXE_400-80004393.SAR"
-kit_sapexedb_file = "/storage/BW4HANA/SAPEXEDB_400-80004392.SAR"
-kit_igsexe_file = "/storage/BW4HANA/igsexe_13-80003187.sar"
-kit_igshelper_file = "/storage/BW4HANA/igshelper_17-10010245.sar"
-kit_saphotagent_file = "/storage/BW4HANA/SAPHOSTAGENT51_51-20009394.SAR"
-kit_hdbclient_file = "/storage/BW4HANA/IMDB_CLIENT20_009_28-80002082.SAR"
-kit_bw4hana_export = "/storage/BW4HANA/export"
+KIT_SAPCAR_FILE = "/storage/BW4HANA/SAPCAR_1010-70006178.EXE"
+KIT_SWPM_FILE = "/storage/BW4HANA/SWPM20SP09_4-80003424.SAR"
+KIT_SAPEXE_FILE = "/storage/BW4HANA/SAPEXE_400-80004393.SAR"
+KIT_SAPEXEDB_FILE = "/storage/BW4HANA/SAPEXEDB_400-80004392.SAR"
+KIT_IGSEXE_FILE = "/storage/BW4HANA/igsexe_13-80003187.sar"
+KIT_IGSHELPER_FILE = "/storage/BW4HANA/igshelper_17-10010245.sar"
+KIT_SAPHOSTAGENT_FILE = "/storage/BW4HANA/SAPHOSTAGENT51_51-20009394.SAR"
+KIT_HDBCLIENT_FILE = "/storage/BW4HANA/IMDB_CLIENT20_009_28-80002082.SAR"
+KIT_BW4HANA_EXPORT = "/storage/BW4HANA/export"
