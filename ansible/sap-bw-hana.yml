@@ -1,0 +1,7 @@
+---
+- name: saphana.yml
+  ansible.builtin.import_playbook: saphana.yml
+- name: bw4app.yml
+  ansible.builtin.import_playbook: bw4app.yml
+...
+

@@ -1,15 +1,26 @@
-# Three Tier SAP BW/4HANA Stack Deployment
+# Three Tier SAP BW/4HANA Stack Deployment 
 
 ## Description
-This automation solution is designed for the deployment of **Three Tier SAP BW/4HANA Stack** using IBM Cloud Schematics or CLI. The SAP solution will be deployed on top of one of the following Operating Systems: **SUSE Linux Enterprise Server 15 SP 3 for SAP**, **SUSE Linux Enterprise Server 15 SP 4 for SAP**, **Red Hat Enterprise Linux 8.4 for SAP**, **Red Hat Enterprise Linux 8.6 for SAP** in an existing IBM Cloud Gen2 VPC, using an existing bastion host with secure remote SSH access.
+This automation solution is designed for the deployment of **Three Tier SAP BW/4HANA Stack** using IBM Cloud Schematics or CLI. The SAP solution will be deployed on top of one of the following Operating Systems: **SUSE Linux Enterprise Server 15 SP 3 for SAP, SUSE Linux Enterprise Server 15 SP 4 for SAP, Red Hat Enterprise Linux 8.4 for SAP, Red Hat Enterprise Linux 8.6** for SAP in an existing IBM Cloud Gen2 VPC, using an existing [bastion host with secure remote SSH access](https://github.com/IBM-Cloud/sap-bastion-setup).
 
-## Installation media
+## Contents:
+
+- [1.1 Installation media](#11-installation-media)
+- [1.2 VSI Configuration](#12-vsi-configuration)
+- [1.3 VPC Configuration](#13-vpc-configuration)
+- [1.4 Files description and structure](#14-files-description-and-structure)
+- [1.5 General input variabiles](#15-general-input-variables)
+- [2.1 Executing the deployment of **Three Tiers SAP BW 4HANA Stack** in GUI (Schematics)](#21-executing-the-deployment-of-three-tiers-sap-bw-4hana-stack-in-gui-schematics)
+- [2.2 Executing the deployment of **Three Tiers SAP BW 4HANA Stack** in CLI](#22-executing-the-deployment-of-three-tiers-sap-bw-4hana-stack-in-cli)
+- [3.1 Related links](#31-related-links)
+
+## 1.1 Installation media
 SAP HANA installation media used for this deployment is the default one for **SAP HANA, platform edition 2.0 SPS05** available at SAP Support Portal under *INSTALLATION AND UPGRADE* area and it has to be provided manually in the input parameter file.
 
 SAP BW/4HANA installation media used for this deployment is the default one for **SAP BW/4HANA 2.0** available at SAP Support Portal under *INSTALLATION AND UPGRADE* area and it has to be provided manually in the input parameter file.
 
-## VSI Configuration
-The VSIs are deployed with one of the following Operating Systems for DB server: Suse Linux Enterprise Server 15 SP 3 for SAP HANA (amd64), Suse Linux Enterprise Server 15 SP 4 for SAP HANA (amd6), Red Hat Enterprise Linux 8.4 for SAP HANA (amd64) or Red Hat Enterprise Linux 8.6 for SAP HANA (amd64) and with one of the following Operating Systems for APP server: Suse Enterprise Linux 15 SP3 for SAP Applications (amd64), Suse Enterprise Linux 15 SP4 for SAP Applications (amd64), Red Hat Enterprise Linux 8.4 for SAP Applications (amd64), Red Hat Enterprise Linux 8.6 for SAP Applications (amd64). The SSH keys are configured to allow root user access. The following storage volumes are creating during the provisioning:
+## 1.2 VSI Configuration
+The VSIs are deployed with one of the following Operating Systems for DB server: **Suse Linux Enterprise Server 15 SP 3 for SAP HANA (amd64), Suse Linux Enterprise Server 15 SP 4 for SAP HANA (amd6), Red Hat Enterprise Linux 8.4 for SAP HANA (amd64), Red Hat Enterprise Linux 8.6 for SAP HANA (amd64)** and with one of the following Operating Systems for APP server: **Suse Enterprise Linux 15 SP3 for SAP Applications (amd64), Suse Enterprise Linux 15 SP4 for SAP Applications (amd64), Red Hat Enterprise Linux 8.4 for SAP Applications (amd64), Red Hat Enterprise Linux 8.6 for SAP Applications (amd64)**. The SSH keys are configured to allow root user access. The following storage volumes are creating during the provisioning:
 
 HANA DB VSI Disks:
 - the disk sizes depend on the selected profile, according to [Intel Virtual Server certified profiles on VPC infrastructure for SAP HANA](https://cloud.ibm.com/docs/sap?topic=sap-hana-iaas-offerings-profiles-intel-vs-vpc) - Updated on 2023-03-08
@@ -31,20 +42,29 @@ SAP APPs VSI Disks:
 
 In order to perform the deployment you can use either the CLI component or the GUI component (Schematics) of the automation solution.
 
-## 1.1 Executing the deployment of **Three Tier SAP BW/4HANA Stack** in GUI (Schematics)
+## 1.3 VPC Configuration
 
- The solution is based on Terraform remote-exec and Ansible playbooks executed by Schematics and it is implementing a 'reasonable' set of best practices for SAP VSI host configuration.
+The Security Rules inherited from BASTION deployment are the following:
+- Allow all traffic in the Security group for private networks.
+- Allow outbound traffic  (ALL for port 53, TCP for ports 80, 443, 8443)
+- Allow inbound SSH traffic (TCP for port 22) from IBM Schematics Servers.
 
-**It contains:**
-- Terraform scripts for the deployment of two VSIs, in an EXISTING VPC, with Subnet and Security Group. The VSIs are intended to be used: one for the data base instance and the other for the application instance.
-- Bash scripts used for the checking of the prerequisites required by SAP VSIs deployment and for the integration into a single step in IBM Schematics GUI of the VSI provisioning and the **Three Tier SAP BW/4HANA Stack** installation.
-- Ansible scripts to configure Three Tier SAP S/4HANA primary application server and a HANA 2.0 node.
+## 1.4 Files description and structure
 
-## IBM Cloud API Key
-The IBM Cloud API Key should be provided as input value of type sensitive for "IBMCLOUD_API_KEY" variable, in `IBM Schematics -> Workspaces -> <Workspace name> -> Settings` menu.
-The IBM Cloud API Key can be created [here](https://cloud.ibm.com/iam/apikeys).
+The solution is based on Terraform remote-exec and Ansible playbooks executed by Schematics and it is implementing a 'reasonable' set of best practices for SAP VSI host configuration.
 
-## Input parameters
+ - `modules` - directory containing the terraform modules.
+ - `ansible`  - directory containing the SAP ansible playbooks.
+ - `main.tf` - contains the configuration of the VSI for the deployment of the current SAP solution.
+ - `output.tf` - contains the code for the information to be displayed after the VSI is created (VPC, Hostname, Private IP).
+ - `integration*.tf & generate*.tf` files - contain the integration code that makes the SAP variabiles from Terraform available to Ansible.
+ - `provider.tf` - contains the IBM Cloud Provider data in order to run `terraform init` command.
+ - `variables.tf` - contains variables for the VPC and VSI.
+ - `versions.tf` - contains the minimum required versions for terraform and IBM Cloud provider.
+ - `sch.auto.tfvars` - contains programatic variables.
+
+## 1.5 General Input variables
+
 The following parameters can be set in the Schematics workspace: VPC, Subnet, Security group, Resource group, Hostname, Profile, Image, SSH Keys and your SAP system configuration variables, as below:
 
 **VSI input parameters:**
@@ -89,7 +109,7 @@ KIT_SAPEXE_FILE | Path to SAP Kernel OS archive (SAR) | As downloaded from SAP S
 KIT_SAPEXEDB_FILE | Path to SAP Kernel DB archive (SAR) | As downloaded from SAP Support Portal
 KIT_IGSEXE_FILE | Path to IGS archive (SAR) | As downloaded from SAP Support Portal
 KIT_IGSHELPER_FILE | Path to IGS Helper archive (SAR) | As downloaded from SAP Support Portal
-kit_saphostagent_file | Path to SAP Host Agent archive (SAR) | As downloaded from SAP Support Portal
+KIT_SAPHOSTAGENT_FILE | Path to SAP Host Agent archive (SAR) | As downloaded from SAP Support Portal
 KIT_HDBCLIENT_FILE | Path to HANA DB client archive (SAR) | As downloaded from SAP Support Portal
 KIT_BW4HANA_EXPORT | Path to BW/4HANA Installation Export dir | The archives downloaded from SAP Support Portal should be present in this path
 
@@ -115,25 +135,30 @@ SAP_MAIN_PASSWORD | Common password for all users that are created during the in
      - Example for Red Hat 8 or Suse 15: KIT_SAPHANA_FILE = "/storage/HANADB/51055299.ZIP"
      - Default variable:  KIT_SAPHANA_FILE = "/storage/HANADB/51055299.ZIP"
 
-## VPC Configuration
+## 2.1 Executing the deployment of **Three Tiers SAP BW 4HANA Stack** in GUI (Schematics)
 
-The Security Rules inherited from BASTION deployment are the following:
-- Allow all traffic in the Security group for private networks.
-- Allow outbound traffic  (ALL for port 53, TCP for ports 80, 443, 8443)
-- Allow inbound SSH traffic (TCP for port 22) from IBM Schematics Servers.
+### IBM Cloud API Key
+The IBM Cloud API Key should be provided as input value of type sensitive for "IBMCLOUD_API_KEY" variable, in `IBM Schematics -> Workspaces -> <Workspace name> -> Settings` menu.
+The IBM Cloud API Key can be created [here](https://cloud.ibm.com/iam/apikeys).
 
- ## Files description and structure:
+### Input parameters
 
- - `modules` - directory containing the terraform modules
- - `main.tf` - contains the configuration of the VSI for the deployment of the current SAP solution.
- - `output.tf` - contains the code for the information to be displayed after the VSI is created (Hostname, Private IP)
- - `integration*.tf` - contains the integration code that makes the SAP variabiles from Terraform available to Ansible.
- - `provider.tf` - contains the IBM Cloud Provider data in order to run `terraform init` command.
- - `terraform.tfvars` - contains the IBM Cloud API key referenced in `provider.tf` (dynamically generated)
- - `variables.tf` - contains variables for the VPC and VSI
- - `versions.tf` - contains the minimum required versions for terraform and IBM Cloud provider.
+The following parameters can be set in the Schematics workspace: VPC, Subnet, Security group, Resource group, Hostname, Profile, Image, SSH Keys and your SAP system configuration variables. These are described in [General input variables Section](#15-general-input-variables) section.
 
-## Steps to follow:
+Beside [General input variables Section](#15-general-input-variables), the below ones, in IBM Schematics have specific description and GUI input options:
+
+**VSI input parameters:**
+
+Parameter | Description
+----------|------------
+IBMCLOUD_API_KEY | IBM Cloud API key (Sensitive* value).
+PRIVATE_SSH_KEY | Input your id_rsa private key pair content in OpenSSH format (Sensitive* value). This private key should be used only during the terraform provisioning and it is recommended to be changed after the SAP deployment.
+ID_RSA_FILE_PATH | The file path for PRIVATE_SSH_KEY will be automatically generated by default. If it is changed, it must contain the relative path from git repo folders.<br /> Default value: "ansible/id_rsa".
+BASTION_FLOATING_IP | The FLOATING IP from the Bastion Server.
+
+**SAP input parameters:**
+
+### Steps to follow:
 
 1.  Make sure that you have the [required IBM Cloud IAM
     permissions](https://cloud.ibm.com/docs/vpc?topic=vpc-managing-user-permissions-for-vpc-resources) to
@@ -151,8 +176,8 @@ The Security Rules inherited from BASTION deployment are the following:
 3.  Create the Schematics workspace:
     1.  From the IBM Cloud menu
     select [Schematics](https://cloud.ibm.com/schematics/overview).
-       - Click Create a workspace.   
-       - Enter a name for your workspace.   
+       - Click Create a workspace.
+       - Enter a name for your workspace.
        - Click Create to create your workspace.
     2.  On the workspace **Settings** page, enter the URL of this solution in the Schematics examples Github repository.
      - Select the latest Terraform version.
@@ -168,61 +193,52 @@ The Security Rules inherited from BASTION deployment are the following:
     provisioning, modification, or deletion process.
 
 The output of the Schematics Apply Plan will list the public/private IP addresses
-of the VSI host, the hostname and the VPC.  
+of the VSI host, the hostname and the VPC.
 
-### Related links:
+## 2.2 Executing the deployment of **Three Tiers SAP BW 4HANA Stack** in CLI
 
-- [How to create a BASTION/STORAGE VSI for SAP in IBM Schematics](https://github.com/IBM-Cloud/sap-bastion-setup)
-- [Securely Access Remote Instances with a Bastion Host](https://www.ibm.com/cloud/blog/tutorial-securely-access-remote-instances-with-a-bastion-host)
-- [VPNs for VPC overview: Site-to-site gateways and Client-to-site servers.](https://cloud.ibm.com/docs/vpc?topic=vpc-vpn-overview)
-- [IBM Cloud Schematics](https://www.ibm.com/cloud/schematics)
-
-## 1.2 Executing the deployment of **Three Tier SAP S/4HANA Stack** in CLI
-
-The solution is based on Terraform scripts and Ansible playbooks executed in CLI and it is implementing a 'reasonable' set of best practices for SAP VSI host configuration.
-
-**It contains:**
-- Terraform scripts for the deployment of two VSIs, in an EXISTING VPC, with Subnet and Security Group. The VSIs are intended to be used: one for the data base instance and the other for the application instance.
-- Ansible scripts to configure Three Tier SAP BW/4HANA primary application server and a HANA 2.0 node.
-Please note that Ansible is started by Terraform and must be available on the same host.
-
-## IBM Cloud API Key
+### IBM Cloud API Key
 For the script configuration add your IBM Cloud API Key in terraform planning phase command 'terraform plan --out plan1'.
 You can create an API Key [here](https://cloud.ibm.com/iam/apikeys).
-
-## Input parameter file
+ 
+### Input parameter file
 The solution is configured by editing your variables in the file `input.auto.tfvars`
-Edit your VPC, Subnet, Security group, Hostname, Profile, Image, SSH Keys like so:
+Edit your VPC, Subnet, Security group, Hostnames, Profile, Image, SSH Keys and starting with minimal recommended disk sizes like so:
+
+**VSI input parameters**
+
 ```shell
 ##########################################################
 # General VPC variables:
 ######################################################
 
-REGION = "eu-de"
+REGION = ""
 # Region for the VSI. Supported regions: https://cloud.ibm.com/docs/containers?topic=containers-regions-and-zones#zones-vpc
+# Edit the variable value with your deployment Region.
 # Example: REGION = "eu-de"
 
-ZONE = "eu-de-2"
+ZONE = ""
 # Availability zone for VSI. Supported zones: https://cloud.ibm.com/docs/containers?topic=containers-regions-and-zones#zones-vpc
-# Example: ZONE = "eu-de-2"
+# Edit the variable value with your deployment Zone.
+# Example: ZONE = "eu-de-1"
 
 VPC = "ic4sap"
 # EXISTING VPC, previously created by the user in the same region as the VSI. The list of available VPCs: https://cloud.ibm.com/vpc-ext/network/vpcs
-# Example: VPC = "ic4sap"
+# Example: VPC = ""
 
-SECURITY_GROUP = "ic4sap-securitygroup"
+SECURITY_GROUP = ""
 # EXISTING Security group, previously created by the user in the same VPC. The list of available Security Groups: https://cloud.ibm.com/vpc-ext/network/securityGroups
 # Example: SECURITY_GROUP = "ic4sap-securitygroup"
 
-RESOURCE_GROUP = "wes-automation"
+RESOURCE_GROUP = ""
 # EXISTING Resource group, previously created by the user. The list of available Resource Groups: https://cloud.ibm.com/account/resource-groups
 # Example: RESOURCE_GROUP = "wes-automation"
 
-SUBNET = "ic4sap-subnet"
+SUBNET = ""
 # EXISTING Subnet in the same region and zone as the VSI, previously created by the user. The list of available Subnets: https://cloud.ibm.com/vpc-ext/network/subnets
 # Example: SUBNET = "ic4sap-subnet"
 
-SSH_KEYS = ["r010-57bfc315-f9e5-46bf-bf61-d87a24a9ce7a", "r010-e372fc6f-4aef-4bdf-ade6-c4b7c1ad61ca", "r010-09325e15-15be-474e-9b3b-21827b260717", "r010-5cfdb578-fc66-4bf7-967e-f5b4a8d03b89" , "r010-7b85d127-7493-4911-bdb7-61bf40d3c7d4", "r010-771e15dd-8081-4cca-8844-445a40e6a3b3", "r010-d941534b-1d30-474e-9494-c26a88d4cda3"]
+SSH_KEYS = [""]
 # List of SSH Keys UUIDs that are allowed to SSH as root to the VSI. The SSH Keys should be created for the same region as the VSI. The list of available SSH Keys UUIDs: https://cloud.ibm.com/vpc-ext/compute/sshKeys
 # Example: SSH_KEYS = ["r010-8f72b994-c17f-4500-af8f-d05680374t3c", "r011-8f72v884-c17f-4500-af8f-d05900374t3c"]
 
@@ -230,9 +246,9 @@ SSH_KEYS = ["r010-57bfc315-f9e5-46bf-bf61-d87a24a9ce7a", "r010-e372fc6f-4aef-4bd
 # DB VSI variables:
 ##########################################################
 
-DB_HOSTNAME = "sapbw4dbmar3"
+DB_HOSTNAME = ""
 # The Hostname for the DB VSI. The hostname should be up to 13 characters, as required by SAP
-# Example: HOSTNAME = "ic4sap"
+# Example: DB_HOSTNAME = "sapbw4db1"
 
 DB_PROFILE = "mx2-16x128"
 # The instance profile used for the HANA VSI. The list of certified profiles for HANA VSIs: https://cloud.ibm.com/docs/sap?topic=sap-hana-iaas-offerings-profiles-intel-vs-vpc
@@ -249,9 +265,9 @@ DB_IMAGE = "ibm-redhat-8-6-amd64-sap-hana-2"
 # SAP APP VSI variables:
 ##########################################################
 
-APP_HOSTNAME = "sapbw4appmar3"
+APP_HOSTNAME = ""
 # The Hostname for the SAP APP VSI. The hostname should be up to 13 characters, as required by SAP
-# Example: HOSTNAME = "ic4sap"
+# Example: HOSTNAME = "sapbw4app1"
 
 APP_PROFILE = "bx2-4x16"
 # The APP VSI profile. Supported profiles: bx2-4x16. The list of available profiles: https://cloud.ibm.com/docs/vpc?topic=vpc-profiles&interface=ui
@@ -259,24 +275,8 @@ APP_PROFILE = "bx2-4x16"
 APP_IMAGE = "ibm-redhat-8-6-amd64-sap-applications-2"
 # OS image for SAP APP VSI. Supported OS images for APP VSIs: ibm-sles-15-3-amd64-sap-applications-2, ibm-sles-15-4-amd64-sap-applications-4, ibm-redhat-8-4-amd64-sap-applications-2, ibm-redhat-8-6-amd64-sap-applications-2.
 # The list of available VPC Operating Systems supported by SAP: SAP note '2927211 - SAP Applications on IBM Virtual Private Cloud (VPC) Infrastructure environment' https://launchpad.support.sap.com/#/notes/2927211; The list of all available OS images: https://cloud.ibm.com/docs/vpc?topic=vpc-about-images
-# Example: APP_IMAGE = "ibm-sles-15-4-amd64-sap-applications-4" 
+# Example: APP_IMAGE = "ibm-sles-15-4-amd64-sap-applications-4"
 ```
-
-Parameter | Description
-----------|------------
-IBMCLOUD_API_KEY | IBM Cloud API key (Sensitive* value).
-SSH_KEYS | List of SSH Keys IDs that are allowed to SSH as root to the VSI. Can contain one or more IDs. The list of SSH Keys is available [here](https://cloud.ibm.com/vpc-ext/compute/sshKeys). <br /> Sample input (use your own SSH IDS from IBM Cloud):<br /> [ "r010-57bfc315-f9e5-46bf-bf61-d87a24a9ce7a" , "r010-3fcd9fe7-d4a7-41ce-8bb3-d96e936b2c7e" ]
-REGION | The cloud region where to deploy the solution. <br /> The regions and zones for VPC are listed [here](https://cloud.ibm.com/docs/containers?topic=containers-regions-and-zones#zones-vpc). <br /> Sample value: eu-de.
-ZONE | The cloud zone where to deploy the solution. <br /> Sample value: eu-de-2.
-VPC | The name of an EXISTING VPC. The list of VPCs is available [here](https://cloud.ibm.com/vpc-ext/network/vpcs)
-SUBNET | The name of an EXISTING Subnet. The list of Subnets is available [here](https://cloud.ibm.com/vpc-ext/network/subnets). 
-SECURITY_GROUP | The name of an EXISTING Security group. The list of Security Groups is available [here](https://cloud.ibm.com/vpc-ext/network/securityGroups).
-RESOURCE_GROUP | The name of an EXISTING Resource Group for VSIs and Volumes resources. The list of Resource Groups is available [here](https://cloud.ibm.com/account/resource-groups).
-[DB/APP]-HOSTNAME | The Hostname for the HANA/APP VSI. The hostname should be up to 13 characters as required by SAP.<br> For more information on rules regarding hostnames for SAP systems, check [SAP Note 611361: Hostnames of SAP ABAP Platform servers](https://launchpad.support.sap.com/#/notes/%20611361)
-DB_PROFILE | The instance profile used for the HANA VSI. The list of certified profiles for HANA VSIs is available [here](https://cloud.ibm.com/docs/sap?topic=sap-hana-iaas-offerings-profiles-intel-vs-vpc). <br> Details about all x86 instance profiles are available [here](https://cloud.ibm.com/docs/vpc?topic=vpc-profiles). <br>  For more information about supported DB/OS and IBM Gen 2 Virtual Server Instances (VSI), check [SAP Note 2927211: SAP Applications on IBM Virtual Private Cloud](https://launchpad.support.sap.com/#/notes/2927211) <br /> Default value: "mx2-16x128"
-DB_IMAGE | The OS image used for HANA VSI. A list of images is available [here](https://cloud.ibm.com/docs/vpc?topic=vpc-about-images) <br> Default value: ibm-redhat-8-6-amd64-sap-hana-2
-APP_PROFILE |  The instance profile used for SAP Application VSI. A list of profiles is available [here](https://cloud.ibm.com/docs/vpc?topic=vpc-profiles) <br>  For more information about supported DB/OS and IBM Gen 2 Virtual Server Instances (VSI), check [SAP Note 2927211: SAP Applications on IBM Virtual Private Cloud](https://launchpad.support.sap.com/#/notes/2927211) <br /> Default value: "bx2-4x16"
-APP_IMAGE | The OS image used for SAP Application VSI. A list of images is available [here](https://cloud.ibm.com/docs/vpc?topic=vpc-about-images).<br /> Default value: ibm-redhat-8-6-amd64-sap-applications-2
 
 Edit your SAP system configuration variables that will be passed to the ansible automated deployment:
 
@@ -338,56 +338,8 @@ KIT_SAPHOSTAGENT_FILE = "/storage/BW4HANA/SAPHOSTAGENT51_51-20009394.SAR"
 KIT_HDBCLIENT_FILE = "/storage/BW4HANA/IMDB_CLIENT20_009_28-80002082.SAR"
 KIT_BW4HANA_EXPORT = "/storage/BW4HANA/export"
 ```
-**SAP input parameters:**
 
-Parameter | Description | Requirements
-----------|-------------|-------------
-HANA_SID | The SAP system ID identifies the SAP HANA system | <ul><li>Consists of exactly three alphanumeric characters</li><li>Has a letter for the first character</li><li>Does not include any of the reserved IDs listed in SAP Note 1979280</li></ul>|
-HANA_SYSNO | Specifies the instance number of the SAP HANA system| <ul><li>Two-digit number from 00 to 97</li><li>Must be unique on a host</li></ul>
-HANA_MAIN_PASSWORD | Common password for all users that are created during the installation | <ul><li>It must be 8 to 14 characters long</li><li>It must consist of at least one digit (0-9), one lowercase letter (a-z), and one uppercase letter (A-Z).</li><li>It can only contain the following characters: a-z, A-Z, 0-9, !, @, #, $, _</li><li>It must not start with a digit or an underscore ( _ )</li></ul>
-HANA_SYSTEM_USAGE  | System Usage | Default: custom<br> Valid values: production, test, development, custom
-HANA_COMPONENTS | SAP HANA Components | Default: server<br> Valid values: all, client, es, ets, lcapps, server, smartda, streaming, rdsync, xs, studio, afl, sca, sop, eml, rme, rtl, trp
-KIT_SAPHANA_FILE | Path to SAP HANA ZIP file | As downloaded from SAP Support Portal
-SAP_SID | The SAP system ID <SAPSID> identifies the entire SAP system | <ul><li>Consists of exactly three alphanumeric characters</li><li>Has a letter for the first character</li><li>Does not include any of the reserved IDs listed in SAP Note 1979280</li></ul>
-SAP_ASCS_INSTANCE_NUMBER | Technical identifier for internal processes of ASCS| <ul><li>Two-digit number from 00 to 97</li><li>Must be unique on a host</li></ul>
-SAP_CI_INSTANCE_NUMBER | Technical identifier for internal processes of CI| <ul><li>Two-digit number from 00 to 97</li><li>Must be unique on a host</li></ul>
-SAP_MAIN_PASSWORD | Common password for all users that are created during the installation | <ul><li>It must be 10 to 14 characters long</li><li>It must contain at least one digit (0-9)</li><li>It can only contain the following characters: a-z, A-Z, 0-9, @, #, $, _</li><li>It must not start with a digit or an underscore ( _ )</li></ul>
-HDB_CONCURRENT_JOBS | Number of concurrent jobs used to load and/or extract archives to HANA Host | Default: 6
-KIT_SAPCAR_FILE  | Path to sapcar binary | As downloaded from SAP Support Portal
-KIT_SWPM_FILE | Path to SWPM archive (SAR) | As downloaded from SAP Support Portal
-KIT_SAPEXE_FILE | Path to SAP Kernel OS archive (SAR) | As downloaded from SAP Support Portal
-KIT_SAPEXEDB_FILE | Path to SAP Kernel DB archive (SAR) | As downloaded from SAP Support Portal
-KIT_IGSEXE_FILE | Path to IGS archive (SAR) | As downloaded from SAP Support Portal
-KIT_IGSHELPER_FILE | Path to IGS Helper archive (SAR) | As downloaded from SAP Support Portal
-kit_saphostagent_file | Path to SAP Host Agent archive (SAR) | As downloaded from SAP Support Portal
-KIT_HDBCLIENT_FILE | Path to HANA DB client archive (SAR) | As downloaded from SAP Support Portal
-KIT_BW4HANA_EXPORT | Path to BW/4HANA Installation Export dir | The archives downloaded from SAP Support Portal should be present in this path
-
-**Obs***: <br />
-- Sensitive - The variable value is not displayed in your tf files details after terrafrorm plan&apply commands.<br />
-- The following variables should be the same like the bastion ones: REGION, ZONE, VPC, SUBNET, SECURITY_GROUP.
-
-## VPC Configuration
-
-The Security Rules are the following:
-- Allow all traffic in the Security group
-- Allow all outbound traffic
-- Allow inbound DNS traffic (UDP port 53)
-- Allow inbound SSH traffic (TCP port 22)
-- Option to Allow inbound TCP traffic with a custom port or a range of ports.
-
-
-## Files description and structure:
- - `modules` - directory containing the terraform modules
- - `input.auto.tfvars` - contains the variables that will need to be edited by the user to customize the solution
- - `integration.tf` - contains the integration code that brings the SAP variabiles from Terraform to Ansible.
- - `main.tf` - contains the configuration of the VSI for SAP single tier deployment.
- - `provider.tf` - contains the IBM Cloud Provider data in order to run `terraform init` command.
- - `variables.tf` - contains variables for the VPC and VSI
- - `versions.tf` - contains the minimum required versions for terraform and IBM Cloud provider.
- - `output.tf` - contains the code for the information to be displayed after the VSI is created (Hostname, Private IP, Public IP)
-
-## Steps to follow:
+## Steps to reproduce:
 
 For initializing terraform:
 
@@ -399,8 +351,10 @@ For planning phase:
 
 ```shell
 terraform plan --out plan1
-# you will be asked for the following sensitive variables: 'IBMCLOUD_API_KEY', 'SAP_MAIN_PASSWORD' and 'HANA_MAIN_PASSWORD'.
+# you will be asked for the following sensitive variables: 
+'IBMCLOUD_API_KEY', 'SAP_MAIN_PASSWORD' and 'HANA_MAIN_PASSWORD'.
 ```
+
 
 For apply phase:
 
@@ -416,11 +370,9 @@ terraform destroy
 'IBMCLOUD_API_KEY', 'SAP_MAIN_PASSWORD' and 'HANA_MAIN_PASSWORD'.
 ```
 
-The Terraform version used for deployment should be >= 1.3.6. 
-Note: The deployment was tested with Terraform 1.3.6
+### 3.1 Related links:
 
-### Related links:
-
-- [See how to create a BASTION/STORAGE VSI for SAP in IBM Schematics](https://github.com/IBM-Cloud/sap-bastion-setup)
+- [How to create a BASTION/STORAGE VSI for SAP in IBM Schematics](https://github.com/IBM-Cloud/sap-bastion-setup)
 - [Securely Access Remote Instances with a Bastion Host](https://www.ibm.com/cloud/blog/tutorial-securely-access-remote-instances-with-a-bastion-host)
 - [VPNs for VPC overview: Site-to-site gateways and Client-to-site servers.](https://cloud.ibm.com/docs/vpc?topic=vpc-vpn-overview)
+- [IBM Cloud Schematics](https://www.ibm.com/cloud/schematics)
