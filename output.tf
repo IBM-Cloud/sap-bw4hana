@@ -17,3 +17,9 @@ output "APP_HOSTNAME" {
 output "APP_PRIVATE_IP" {
   value	= module.app-vsi.PRIVATE-IP
 }
+
+output "ATR_INSTANCE_NAME" {
+  description = "Activity Tracker instance name."
+  value       = var.ATR_NAME
+}
+

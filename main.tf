@@ -34,6 +34,7 @@ module "precheck-ssh-exec" {
 module "vpc-subnet" {
   source = "./modules/vpc/subnet"
   depends_on = [ module.precheck-ssh-exec ]
+  # depends_on = [ module.activity-tracker ]
   ZONE = var.ZONE
   VPC = var.VPC
   SECURITY_GROUP = var.SECURITY_GROUP
@@ -42,7 +43,7 @@ module "vpc-subnet" {
 
 module "db-vsi" {
   source		= "./modules/db-vsi"
-  depends_on	= [ module.precheck-ssh-exec ]
+  depends_on = [ module.vpc-subnet ]
   ZONE			= var.ZONE
   VPC			= var.VPC
   SECURITY_GROUP = var.SECURITY_GROUP
@@ -52,8 +53,6 @@ module "db-vsi" {
   PROFILE		= var.DB_PROFILE
   IMAGE			= var.DB_IMAGE
   SSH_KEYS		= var.SSH_KEYS
-#  VOLUME_SIZES	= [ "40" , "32", "64", "128", "256" ]
-#  VOL_PROFILE		= "10iops-tier"
 }
 
 module "app-vsi" {

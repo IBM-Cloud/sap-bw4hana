@@ -36,7 +36,15 @@ ID_RSA_FILE_PATH = "ansible/id_rsa"
 # Input your existing id_rsa private key file path in OpenSSH format with 0600 permissions.
 # This private key it is used only during the terraform provisioning and it is recommended to be changed after the SAP deployment.
 # It must contain the relative or absoute path from your Bastion.
-# Examples: "ansible/id_rsa_abap_db2_dst" , "~/.ssh/id_rsa_abap_db2_dst" , "/root/.ssh/id_rsa".
+# Examples: "ansible/id_rsa_bw4hana" , "~/.ssh/id_rsa_bw4hana" , "/root/.ssh/id_rsa".
+
+##########################################################
+# Activity Tracker variables:
+##########################################################
+
+ATR_NAME = ""
+# The name of an existent Activity Tracker instance, in the same region chosen for SAP system deployment.
+# Example: ATR_NAME="Activity-Tracker-SAP-eu-de"
 
 ##########################################################
 # DB VSI variables:
@@ -52,10 +60,10 @@ DB_PROFILE = "mx2-16x128"
 # For more information about supported DB/OS and IBM Gen 2 Virtual Server Instances (VSI), check [SAP Note 2927211: SAP Applications on IBM Virtual Private Cloud](https://launchpad.support.sap.com/#/notes/2927211) 
 # Default value: "mx2-16x128"
 
-DB_IMAGE = "ibm-redhat-8-6-amd64-sap-hana-2"
-# OS image for DB VSI. Supported OS images for DB VSIs: ibm-sles-15-3-amd64-sap-hana-2, ibm-sles-15-4-amd64-sap-hana-3, ibm-redhat-8-4-amd64-sap-hana-2, ibm-redhat-8-6-amd64-sap-hana-2.
+DB_IMAGE = "ibm-redhat-8-6-amd64-sap-hana-4"
+# OS image for DB VSI. Supported OS images for DB VSIs: ibm-sles-15-3-amd64-sap-hana-8, ibm-sles-15-4-amd64-sap-hana-5, ibm-redhat-8-4-amd64-sap-hana-7, ibm-redhat-8-6-amd64-sap-hana-4.
 # The list of available VPC Operating Systems supported by SAP: SAP note '2927211 - SAP Applications on IBM Virtual Private Cloud (VPC) Infrastructure environment' https://launchpad.support.sap.com/#/notes/2927211; The list of all available OS images: https://cloud.ibm.com/docs/vpc?topic=vpc-about-images
-# Example: DB_IMAGE = "ibm-sles-15-4-amd64-sap-hana-3"
+# Example: DB_IMAGE = "ibm-sles-15-4-amd64-sap-hana-5"
 
 ##########################################################
 # SAP APP VSI variables:
@@ -68,8 +76,8 @@ APP_HOSTNAME = ""
 APP_PROFILE = "bx2-4x16"
 # The APP VSI profile. Supported profiles: bx2-4x16. The list of available profiles: https://cloud.ibm.com/docs/vpc?topic=vpc-profiles&interface=ui
 
-APP_IMAGE = "ibm-redhat-8-6-amd64-sap-applications-2"
-# OS image for SAP APP VSI. Supported OS images for APP VSIs: ibm-sles-15-3-amd64-sap-applications-2, ibm-sles-15-4-amd64-sap-applications-4, ibm-redhat-8-4-amd64-sap-applications-2, ibm-redhat-8-6-amd64-sap-applications-2.
+APP_IMAGE = "ibm-redhat-8-6-amd64-sap-applications-4"
+# OS image for SAP APP VSI. Supported OS images for APP VSIs: ibm-sles-15-3-amd64-sap-applications-9, ibm-sles-15-4-amd64-sap-applications-6, ibm-redhat-8-4-amd64-sap-applications-7, ibm-redhat-8-6-amd64-sap-applications-4.
 # The list of available VPC Operating Systems supported by SAP: SAP note '2927211 - SAP Applications on IBM Virtual Private Cloud (VPC) Infrastructure environment' https://launchpad.support.sap.com/#/notes/2927211; The list of all available OS images: https://cloud.ibm.com/docs/vpc?topic=vpc-about-images
 # Example: APP_IMAGE = "ibm-sles-15-4-amd64-sap-applications-4" 
 
@@ -77,7 +85,7 @@ APP_IMAGE = "ibm-redhat-8-6-amd64-sap-applications-2"
 # SAP HANA configuration
 ##########################################################
 
-HANA_SID = "SDB"
+HANA_SID = "HDB"
 # SAP HANA system ID. Should follow the SAP rules for SID naming.
 # Example: HANA_SID = "HDB"
 
