@@ -38,13 +38,6 @@ ID_RSA_FILE_PATH = "ansible/id_rsa"
 # It must contain the relative or absoute path from your Bastion.
 # Examples: "ansible/id_rsa_bw4hana" , "~/.ssh/id_rsa_bw4hana" , "/root/.ssh/id_rsa".
 
-##########################################################
-# Activity Tracker variables:
-##########################################################
-
-ATR_NAME = ""
-# The name of an existent Activity Tracker instance, in the same region chosen for SAP system deployment.
-# Example: ATR_NAME="Activity-Tracker-SAP-eu-de"
 
 ##########################################################
 # DB VSI variables:

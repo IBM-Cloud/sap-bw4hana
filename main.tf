@@ -34,7 +34,6 @@ module "precheck-ssh-exec" {
 module "vpc-subnet" {
   source = "./modules/vpc/subnet"
   depends_on = [ module.precheck-ssh-exec ]
-  # depends_on = [ module.activity-tracker ]
   ZONE = var.ZONE
   VPC = var.VPC
   SECURITY_GROUP = var.SECURITY_GROUP
@@ -67,7 +66,7 @@ module "app-vsi" {
   PROFILE		= var.APP_PROFILE
   IMAGE			= var.APP_IMAGE
   SSH_KEYS		= var.SSH_KEYS
-  VOLUME_SIZES	= [ "40" , "128" ]
+  VOLUME_SIZE	= "128"
   VOL_PROFILE	= "10iops-tier"
 
 }
@@ -95,4 +94,3 @@ module "ansible-exec-cli" {
 #  HANA_MAIN_PASSWORD = var.HANA_MAIN_PASSWORD
   PLAYBOOK = "sap-bw-hana.yml"
 }
-

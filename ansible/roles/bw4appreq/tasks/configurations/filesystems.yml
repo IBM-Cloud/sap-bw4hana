@@ -5,7 +5,6 @@
   when:
      - not device.value.partitions
      - not device.value.holders
-     - device.key is search('vd')
      - device.value.size == swap_disk_size
   loop: "{{ ansible_devices | dict2items }}"
   loop_control:
@@ -20,7 +19,7 @@
   lvg:
     vg: "{{ sap_sid|lower }}_swap_vg"
     pvs: "/dev/{{ swap_disk[0] }}"
-    pesize: "32"
+#    pesize: "32"
 
 - name: Get available storage devices for SAP instance
   set_fact:
@@ -28,7 +27,7 @@
   when:
      - not device.value.partitions
      - not device.value.holders
-     - device.key is search('vd')
+     - not(device.key == swap_disk[0])
      - device.value.size == sap_disk_size
   loop: "{{ ansible_devices | dict2items }}"
   loop_control:
@@ -45,34 +44,11 @@
     pvs: "/dev/{{ sap_disk[0] }}"
     pesize: "32"
 
-- name: Get the RAM size
-  set_fact:
-    app_ram: "{{ app_profile.split('-')[1].split('x')[1] }}"
-
-- name: Get the swap logical volume size for RAM lower than 32 GB
-  set_fact:
-    swap_lv_size: "{{ app_ram | int * 2 }}g"
-  when: app_ram | int < 32
-
-- name: Get the swap logical volume size for RAM higher than 32 GB and lower than 8192
-  set_fact:
-    swap_lv_size: "{{ data_swap.size }}g"
-  loop: "{{ swap_lv }}"
-  loop_control:
-    loop_var: data_swap
-  when: (app_ram | int >= 32) and (app_ram | int < 8192) and (app_ram | int >= data_swap.ram_min) and (app_ram | int <= data_swap.ram_max)
-
-- name: Get the swap logical volume size for RAM higher than 8192
-  set_fact:
-    # swap_lv_size: "320g"
-    swap_lv_size: "32g"
-  when: app_ram | int >= 8192
-
 - name: Create a logical volume for swap
   lvol:
     vg: "{{ sap_sid|lower }}_swap_vg"
     lv: "{{ sap_sid|lower }}_swap_lv"
-    size: "{{ swap_lv_size }}"
+    size: 100%FREE
 
 - name: Create a logical volume for /usr/sap
   lvol:

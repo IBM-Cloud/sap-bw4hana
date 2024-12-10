@@ -11,8 +11,6 @@ The solution is based on Terraform remote-exec and Ansible playbooks executed by
 
 Please note that Ansible is started by Terraform and must be available on the same host.
 
-In order to track the events specific to the resources deployed by this solution, the [IBM Cloud Activity Tracker](https://cloud.ibm.com/docs/activity-tracker?topic=activity-tracker-getting-started#gs_ov) to be used should be specified.   
-IBM Cloud Activity Tracker service collects and stores audit records for API calls made to resources that run in the IBM Cloud. It can be used to monitor the activity of your IBM Cloud account, investigate abnormal activity and critical actions, and comply with regulatory audit requirements. In addition, you can be alerted on actions as they happen.    
 
 ## Contents
 
@@ -98,12 +96,6 @@ DB_IMAGE | The OS image used for HANA VSI (See Obs*). A list of images is availa
 APP_HOSTNAME | The Hostname for the SAP Application VSI. The hostname should be up to 13 characters as required by SAP.  For more information on rules regarding hostnames for SAP systems, check [SAP Note 611361: Hostnames of SAP ABAP Platform servers](https://launchpad.support.sap.com/#/notes/%20611361)
 APP_PROFILE |  The instance profile used for SAP Application VSI. A list of profiles is available [here](https://cloud.ibm.com/docs/vpc?topic=vpc-profiles) <br>  For more information about supported DB/OS and IBM Gen 2 Virtual Server Instances (VSI), check [SAP Note 2927211: SAP Applications on IBM Virtual Private Cloud](https://launchpad.support.sap.com/#/notes/2927211) <br /> Default value: "bx2-4x16"
 APP_IMAGE | The OS image used for SAP Application VSI (See Obs*). A list of images is available [here](https://cloud.ibm.com/docs/vpc?topic=vpc-about-images).<br /> Default value: ibm-redhat-8-6-amd64-sap-applications-4
-
-**Activity Tracker input parameters**
-
-Parameter | Description
-----------|------------
-ATR_NAME | ATR_NAME The name of an existent Activity Tracker instance, in the same region chosen for SAP system deployment. The list of available Activity Tracker is available here Example: ATR_NAME="Activity-Tracker-SAP-eu-de".     
 
 **SAP input parameters**
 
@@ -204,7 +196,7 @@ PRIVATE_SSH_KEY | Input your id_rsa private key pair content in OpenSSH format (
 7.  Review the logs to ensure that no errors occurred during the
     provisioning, modification, or deletion process.
 
-In the output of the Schematics `Apply Plan` the private IP address of the VSI hosts, the hostname of the VSIs and the Activity Tracker instance name will be displayed.
+In the output of the Schematics `Apply Plan` the private IP address of the VSI hosts and the hostname of the VSIs will be displayed.
 
 ## 2.2 Executing the deployment of **Three Tiers SAP BW 4HANA Stack** in CLI
 
@@ -258,14 +250,6 @@ ID_RSA_FILE_PATH = "ansible/id_rsa"
 # This private key it is used only during the terraform provisioning and it is recommended to be changed after the SAP deployment.
 # It must contain the relative or absoute path from your Bastion.
 # Examples: "ansible/id_rsa_bw4hana" , "~/.ssh/id_rsa_bw4hana" , "/root/.ssh/id_rsa".
-
-##########################################################
-# Activity Tracker variables:
-##########################################################
-
-ATR_NAME = "Activity-Tracker-SAP-eu-de"
-# The name of the Activity Tracker instance, in the same region chosen for SAP system deployment.
-# Example: ATR_NAME="Activity-Tracker-SAP-eu-de"
 
 ##########################################################
 # DB VSI variables:

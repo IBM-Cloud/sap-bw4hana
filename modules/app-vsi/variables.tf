@@ -48,8 +48,21 @@ variable "SSH_KEYS" {
     description = "List of SSH Keys to access the VSI"
 }
 
-variable "VOLUME_SIZES" {
-    type = list(string)
+variable "VOLUME_SIZE" {
+    type = string
     description = "List of volume sizes in GB to be created"
 }
 
+locals {
+    RAM_SIZE = tonumber(split("x", split("-", var.PROFILE)[1])[1])
+    RANGES = jsondecode(file("${path.module}/files/swap_size.json"))
+    SWAP_list = [
+        for range in local.RANGES : range.swap_size
+            if (
+            (range.ram_min == null || local.RAM_SIZE >= range.ram_min) && 
+            (range.ram_max == null || local.RAM_SIZE <= range.ram_max)
+            ) 
+    ]
+    SWAP_size = local.SWAP_list[0]
+    VOLUME_SIZES = [local.SWAP_size, var.VOLUME_SIZE]
+}
